@@ -17,7 +17,7 @@ if [ ! -e "$devname" ] ; then
 fi
 #if it's an mmc device we need a p
 echo "$devname" | grep mmc && needp="p"
-umount "$devname"*
+umount "$devname*"
 echo "Partitioning..."
 parted $devname mklabel gpt
 cgpt create -z $devname
@@ -44,16 +44,18 @@ cd /tmp/archinstall
 mkdir root 
 echo "Downloading base image..."
 wget -O - http://archlinuxarm.org/os/ArchLinuxARM-chromebook-latest.tar.gz > ArchLinuxARM-chromebook-latest.tar.gz
-mount -v "$rootpart" root 
+mount -t ext4 -v "$rootpart" root 
 echo "Copying files..."
 tar -xvf ArchLinuxARM-chromebook-latest.tar.gz -C root
 #ls root
 mkdir mnt
-mount -v "$bootpart" mnt
-cp -v root/boot/vmlinux.uimg mnt
+mount -t ext2 -v "$bootpart" mnt
+echo "Copying kernel..."
+cp root/boot/vmlinux.uimg mnt
 #ls mnt
 umount mnt
-mount "$scriptpart" mnt
+echo "Copying uboot scripts..."
+mount -t vfat "$scriptpart" mnt
 mkdir mnt/u-boot
 cp -v root/boot/boot.scr.uimg mnt/u-boot
 ls mnt
@@ -66,6 +68,8 @@ cd /tmp
 rm -rf /tmp/archinstall
 echo "Syncing disks..."
 sync
+echo "unmounting $devname*"
+umount "$devname*"
 echo "Ok, you should now have a bootable snow arch stick"
 echo "If you havn't hit dev mode yet, here's a hint:"
 echo "crossystem dev_boot_usb=1 dev_boot_signed_only=0"
