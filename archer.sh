@@ -17,7 +17,7 @@ if [ ! -e "$devname" ] ; then
 fi
 #if it's an mmc device we need a p
 echo "$devname" | grep mmc && needp="p"
-umount "$devname*"
+umount "$devname"*
 echo "Partitioning..."
 parted $devname mklabel gpt
 cgpt create -z $devname
@@ -38,7 +38,7 @@ mkfs.ext2 -v "$bootpart"
 echo "Formatting root partition ($rootpart) ext4..."
 mkfs.ext4 -v "$rootpart"
 echo "Formatting scripts partition ($scriptpart) vfat..."
-mkfs.vfat -F 16 -v "$scriptpart"
+mkfs.vfat -v "$scriptpart"
 mkdir /tmp/archinstall
 cd /tmp/archinstall
 mkdir root 
@@ -69,7 +69,7 @@ rm -rf /tmp/archinstall
 echo "Syncing disks..."
 sync
 echo "unmounting $devname*"
-umount "$devname*"
+umount "$devname"*
 echo "Ok, you should now have a bootable snow arch stick"
 echo "If you havn't hit dev mode yet, here's a hint:"
 echo "crossystem dev_boot_usb=1 dev_boot_signed_only=0"
