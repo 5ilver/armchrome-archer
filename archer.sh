@@ -34,9 +34,9 @@ bootpart="$devname""$needp""2"
 rootpart="$devname""$needp3""3"
 scriptpart="$devname""$needp""12"
 echo "Formatting boot partition ($bootpart) ext2..."
-mkfs.ext2 -v "$bootpart"
+mkfs.ext2 -vF "$bootpart"
 echo "Formatting root partition ($rootpart) ext4..."
-mkfs.ext4 -v "$rootpart"
+mkfs.ext4 -vF "$rootpart"
 echo "Formatting scripts partition ($scriptpart) vfat..."
 mkfs.vfat -v "$scriptpart"
 mkdir /tmp/archinstall
@@ -46,7 +46,7 @@ echo "Downloading base image..."
 wget -O - http://archlinuxarm.org/os/ArchLinuxARM-chromebook-latest.tar.gz > ArchLinuxARM-chromebook-latest.tar.gz
 mount -t ext4 -v "$rootpart" root 
 echo "Copying files..."
-tar -xvf ArchLinuxARM-chromebook-latest.tar.gz -C root
+tar -xf ArchLinuxARM-chromebook-latest.tar.gz -C root
 #ls root
 mkdir mnt
 mount -t ext2 -v "$bootpart" mnt
@@ -54,22 +54,24 @@ echo "Copying kernel..."
 cp root/boot/vmlinux.uimg mnt
 #ls mnt
 umount mnt
-echo "Copying uboot scripts..."
-mount -t vfat "$scriptpart" mnt
-mkdir mnt/u-boot
-cp -v root/boot/boot.scr.uimg mnt/u-boot
-ls mnt
-umount mnt
+#Is this stuff obsolete now?
+#echo "Copying uboot scripts..."
+#mount -t vfat "$scriptpart" mnt
+#mkdir mnt/u-boot
+#cp -v root/boot/boot.scr.uimg mnt/u-boot
+#ls mnt
+#umount mnt
 echo "Downloading bootloader..."
 wget -O - http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/nv_uboot-snow.kpart.bz2 | bunzip2 > nv_uboot-snow.kpart
 echo "Writing bootloader to kernel partition ($kernelpart)..."
 dd if=nv_uboot-snow.kpart of="$kernelpart"
 cd /tmp
-rm -rf /tmp/archinstall
 echo "Syncing disks..."
 sync
 echo "unmounting $devname*"
 umount "$devname"*
+echo "removing /tmp/archinstall"
+rm -rf /tmp/archinstall
 echo "Ok, you should now have a bootable snow arch stick"
 echo "If you havn't hit dev mode yet, here's a hint:"
 echo "crossystem dev_boot_usb=1 dev_boot_signed_only=0"
