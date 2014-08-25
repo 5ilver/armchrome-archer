@@ -8,6 +8,7 @@ which mkfs.vfat || exit
 which mkfs.ext2 || exit 
 which mkfs.ext4 || exit 
 which wget || exit 
+which bunzip2 || exit 
 echo "Enter device name (eg, /dev/sda)"
 echo "Note: This will destroy all data. Avoid mixing with alcohol."
 read devname
@@ -54,13 +55,12 @@ echo "Copying kernel..."
 cp root/boot/vmlinux.uimg mnt
 #ls mnt
 umount mnt
-#Is this stuff obsolete now?
-#echo "Copying uboot scripts..."
-#mount -t vfat "$scriptpart" mnt
-#mkdir mnt/u-boot
-#cp -v root/boot/boot.scr.uimg mnt/u-boot
-#ls mnt
-#umount mnt
+echo "Copying uboot scripts..."
+mount -t vfat "$scriptpart" mnt
+mkdir mnt/u-boot
+wget http://archlinuxarm.org/os/exynos/boot.scr.uimg cp boot.scr.uimg mnt/u-boot
+ls mnt
+umount mnt
 echo "Downloading bootloader..."
 wget -O - http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/nv_uboot-snow.kpart.bz2 | bunzip2 > nv_uboot-snow.kpart
 echo "Writing bootloader to kernel partition ($kernelpart)..."
