@@ -19,7 +19,7 @@ if [ ! -e "$devname" ] ; then
 fi
 #if it's an mmc device we need a p
 echo "$devname" | grep mmc && needp="p"
-umount "$devname"*
+umount "$devname"* || echo umount failed
 echo "Partitioning..."
 parted -s $devname mklabel gpt
 cgpt create -z $devname
@@ -49,12 +49,11 @@ wget -O - http://archlinuxarm.org/os/ArchLinuxARM-chromebook-latest.tar.gz > Arc
 mount -t ext4 -v "$rootpart" root 
 echo "Copying files..."
 tar -xf ArchLinuxARM-chromebook-latest.tar.gz -C root
-#ls root
 mkdir mnt
 mount -t ext2 -v "$bootpart" mnt
 echo "Copying kernel..."
 cp root/boot/vmlinux.uimg mnt
-#ls mnt
+umount root 
 umount mnt
 echo "Copying uboot scripts..."
 mount -t vfat "$scriptpart" mnt
@@ -70,8 +69,6 @@ dd if=nv_uboot-snow.kpart of="$kernelpart"
 cd /tmp
 echo "Syncing disks..."
 sync
-echo "unmounting $devname*"
-umount "$devname"*
 echo "removing /tmp/archinstall"
 rm -rf /tmp/archinstall
 echo "Ok, you should now have a bootable snow arch stick"
