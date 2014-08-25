@@ -1,15 +1,16 @@
 #!/bin/bash
 # Simple arch installer for usb sticks and sd cards
 # use with samsung arm chromebook
-#set -v
-which cgpt || exit
-which parted || exit 
-which mkfs.vfat || exit 
-which mkfs.ext2 || exit 
-which mkfs.ext4 || exit 
-which wget || exit 
-which bunzip2 || exit 
+set -e
+which cgpt
+which parted
+which mkfs.vfat
+which mkfs.ext2
+which mkfs.ext4
+which wget
+which bunzip2
 echo "Enter device name (eg, /dev/sda)"
+echo "Requires at least a 1GB storage device"
 echo "Note: This will destroy all data. Avoid mixing with alcohol."
 read devname
 if [ ! -e "$devname" ] ; then
@@ -20,7 +21,7 @@ fi
 echo "$devname" | grep mmc && needp="p"
 umount "$devname"*
 echo "Partitioning..."
-parted $devname mklabel gpt
+parted -s $devname mklabel gpt
 cgpt create -z $devname
 cgpt create $devname
 cgpt add -i 1 -t kernel -b 8192 -s 32768 -l U-Boot -S 1 -T 5 -P 10 $devname
@@ -76,9 +77,10 @@ rm -rf /tmp/archinstall
 echo "Ok, you should now have a bootable snow arch stick"
 echo "If you havn't hit dev mode yet, here's a hint:"
 echo "crossystem dev_boot_usb=1 dev_boot_signed_only=0"
-echo "Boot with CTRL+u"
-echo "On uboot prompt:"
+echo "Select external storage for boot at the white dev mode screen with CTRL+u"
+echo "If you need to reset your uboot env enter this on the uboot prompt:"
 echo "env default -f"
 echo "saveenv"
 echo "reset"
 echo "Then you should be all set to boot with CTRL-u, or not, whatever"
+echo "Username: root Password: root"
