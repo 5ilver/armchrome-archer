@@ -58,7 +58,8 @@ umount mnt
 echo "Copying uboot scripts..."
 mount -t vfat "$scriptpart" mnt
 mkdir mnt/u-boot
-wget http://archlinuxarm.org/os/exynos/boot.scr.uimg cp boot.scr.uimg mnt/u-boot
+wget http://archlinuxarm.org/os/exynos/boot.scr.uimg 
+cp boot.scr.uimg mnt/u-boot
 ls mnt
 umount mnt
 echo "Downloading bootloader..."
